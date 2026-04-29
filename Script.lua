@@ -74,14 +74,14 @@ acceptBtn.MouseButton1Click:Connect(function()
     blur:Destroy()
 end)
 
--- ===== МЕНЮ (загружается сразу) =====
+-- ===== МЕНЮ (ШИРОКОЕ) =====
 local gui = Instance.new("ScreenGui")
 gui.Name = "MANhub"
 gui.Parent = game:GetService("CoreGui")
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 350, 0, 500)
+main.Size = UDim2.new(0, 450, 0, 520)  -- ШИРИНА 450 (было 350)
 main.Position = UDim2.new(0, 10, 0, 70)
 main.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 main.BackgroundTransparency = 0.1
@@ -179,7 +179,7 @@ local function addScript(name, url, col)
     btnCorner.Parent = btn
     
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -90, 0, 24)
+    nameLabel.Size = UDim2.new(1, -100, 0, 24)
     nameLabel.Position = UDim2.new(0, 16, 0, 8)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = name
@@ -190,7 +190,7 @@ local function addScript(name, url, col)
     nameLabel.Parent = btn
     
     local descLabel = Instance.new("TextLabel")
-    descLabel.Size = UDim2.new(1, -90, 0, 18)
+    descLabel.Size = UDim2.new(1, -100, 0, 18)
     descLabel.Position = UDim2.new(0, 16, 0, 32)
     descLabel.BackgroundTransparency = 1
     descLabel.Text = "нажми чтобы запустить"
@@ -201,8 +201,8 @@ local function addScript(name, url, col)
     descLabel.Parent = btn
     
     local run = Instance.new("TextButton")
-    run.Size = UDim2.new(0, 70, 0, 32)
-    run.Position = UDim2.new(1, -78, 0.5, -16)
+    run.Size = UDim2.new(0, 75, 0, 32)
+    run.Position = UDim2.new(1, -85, 0.5, -16)
     run.BackgroundColor3 = col or Color3.fromRGB(0, 130, 80)
     run.Text = "СТАРТ"
     run.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -300,8 +300,8 @@ minBtn.MouseButton1Click:Connect(function()
         scroll.Visible = true
     else
         minimized = true
-        main.Size = UDim2.new(0, 55, 0, 45)
-        main.Position = UDim2.new(1, -65, 0, 70)
+        main.Size = UDim2.new(0, 65, 0, 45)
+        main.Position = UDim2.new(1, -75, 0, 70)
         minBtn.Text = "+"
         scroll.Visible = false
     end

@@ -364,4 +364,4 @@ game.StarterGui:SetCore("SendNotification", {
     Duration = 3
 })
 
-print("@MANscript - Script Hub активирован")
+print("@MANscript - Script Hub активирован"

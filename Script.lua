@@ -74,14 +74,14 @@ acceptBtn.MouseButton1Click:Connect(function()
     blur:Destroy()
 end)
 
--- ===== МЕНЮ (ШИРОКОЕ) =====
+-- ===== МЕНЮ (широкое) =====
 local gui = Instance.new("ScreenGui")
 gui.Name = "MANhub"
 gui.Parent = game:GetService("CoreGui")
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 450, 0, 520)  -- ШИРИНА 450 (было 350)
+main.Size = UDim2.new(0, 450, 0, 520)
 main.Position = UDim2.new(0, 10, 0, 70)
 main.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 main.BackgroundTransparency = 0.1
@@ -103,7 +103,7 @@ titleCorner.CornerRadius = UDim.new(0, 14)
 titleCorner.Parent = titleBar
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -50, 1, 0)
+title.Size = UDim2.new(1, -120, 1, 0)
 title.Position = UDim2.new(0, 12, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "MANscript Hub"
@@ -112,6 +112,31 @@ title.TextSize = 16
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Font = Enum.Font.GothamBold
 title.Parent = titleBar
+
+-- КНОПКА ТЕЛЕГРАМ В ЗАГОЛОВКЕ
+local tgBtn = Instance.new("TextButton")
+tgBtn.Size = UDim2.new(0, 80, 0, 30)
+tgBtn.Position = UDim2.new(1, -120, 0.5, -15)
+tgBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+tgBtn.Text = "📢 ТГК"
+tgBtn.TextColor3 = Color3.fromRGB(200, 180, 255)
+tgBtn.TextSize = 12
+tgBtn.Font = Enum.Font.GothamBold
+tgBtn.BorderSizePixel = 0
+tgBtn.Parent = titleBar
+
+local tgCorner = Instance.new("UICorner")
+tgCorner.CornerRadius = UDim.new(0, 8)
+tgCorner.Parent = tgBtn
+
+tgBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://t.me/manscripthub")
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "MANscript",
+        Text = "Ссылка на ТГК скопирована!",
+        Duration = 2
+    })
+end)
 
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 28, 0, 28)
@@ -244,7 +269,7 @@ local info = Instance.new("TextButton")
 info.Size = UDim2.new(1, -8, 0, 42)
 info.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 info.BackgroundTransparency = 0.5
-info.Text = "@MANscript  |  👉 МОЙ ТГК 👈"
+info.Text = "@MANscript  |  спасибо за использование ❤️"
 info.TextColor3 = Color3.fromRGB(160, 160, 180)
 info.TextSize = 11
 info.Font = Enum.Font.Gotham
@@ -254,15 +279,6 @@ info.Parent = scroll
 local infoCorner = Instance.new("UICorner")
 infoCorner.CornerRadius = UDim.new(0, 10)
 infoCorner.Parent = info
-
-info.MouseButton1Click:Connect(function()
-    setclipboard("https://t.me/manscripthub")
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "MANscript",
-        Text = "Ссылка на ТГК скопирована!",
-        Duration = 2
-    })
-end)
 
 local dragging = false
 local dragStart = nil

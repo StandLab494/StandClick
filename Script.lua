@@ -74,9 +74,9 @@ acceptBtn.MouseButton1Click:Connect(function()
     blur:Destroy()
 end)
 
--- ===== МЕНЮ (широкое) =====
+-- ===== МЕНЮ =====
 local gui = Instance.new("ScreenGui")
-gui.Name = "MANhub"
+gui.Name = "MANscriptHub"
 gui.Parent = game:GetService("CoreGui")
 gui.ResetOnSpawn = false
 
@@ -118,7 +118,7 @@ local tgBtn = Instance.new("TextButton")
 tgBtn.Size = UDim2.new(0, 80, 0, 30)
 tgBtn.Position = UDim2.new(1, -120, 0.5, -15)
 tgBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-tgBtn.Text = "📢 ТГК"
+tgBtn.Text = "📢 ТГК ВЛАДЕЛЬЦА СКРИПТА"
 tgBtn.TextColor3 = Color3.fromRGB(200, 180, 255)
 tgBtn.TextSize = 12
 tgBtn.Font = Enum.Font.GothamBold

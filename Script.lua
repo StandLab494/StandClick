@@ -1,4 +1,4 @@
--- MANscript Hub (первое меню + предупреждение + RexBR)
+-- MANscript Hub (первое меню + удобный скролл)
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -94,7 +94,7 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 12)
 btnCorner.Parent = acceptBtn
 
--- ===== ОСНОВНОЕ МЕНЮ (первое оформление) =====
+-- ===== ОСНОВНОЕ МЕНЮ (первое оформление + удобный скролл) =====
 local function loadMenu()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "MANscriptHub"
@@ -189,15 +189,22 @@ local function loadMenu()
     scrollFrame.Position = UDim2.new(0, 10, 0, 65)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.BorderSizePixel = 0
-    scrollFrame.ScrollBarThickness = 4
+    scrollFrame.ScrollBarThickness = 5  -- толще для пальца
     scrollFrame.ScrollBarImageColor3 = colors.accent
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scrollFrame.ScrollBarImageTransparency = 0.5
+    scrollFrame.ElasticBehavior = Enum.ElasticBehavior.Always
     scrollFrame.Parent = mainFrame
 
     local uiList = Instance.new("UIListLayout")
     uiList.Padding = UDim.new(0, 12)
     uiList.SortOrder = Enum.SortOrder.LayoutOrder
     uiList.Parent = scrollFrame
+
+    -- Функция для автоматической прокрутки вниз
+    local function scrollToBottom()
+        task.wait(0.05)
+        scrollFrame.CanvasPosition = Vector2.new(0, scrollFrame.CanvasSize.Y.Offset)
+    end
 
     local function createCategory(title)
         local catFrame = Instance.new("Frame")
@@ -319,7 +326,7 @@ local function loadMenu()
     createScriptButton("99 Nights", "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", Color3.fromRGB(120, 60, 180))
     createScriptButton("Steal a Brainrot", "https://raw.githubusercontent.com/platinww/CrustyMain/refs/heads/main/Steal-A-Brainrot/DUELWorld.lua", Color3.fromRGB(150, 50, 100))
 
-    createCategory("🚀 БЫСТРЫЙ СБОР")
+    createCategory("🚀 БЫСТРЫЙ СБОР / ПОЛЁТ")
     createScriptButton("RexBR Hub (Fly+Collect)", "https://pastebin.com/raw/pCMCfnmV", Color3.fromRGB(0, 200, 150))
 
     createCategory("ℹ️ ИНФО")
@@ -338,6 +345,7 @@ local function loadMenu()
     infoCorner.CornerRadius = UDim.new(0, 12)
     infoCorner.Parent = infoBtn
 
+    -- Обновление Canvas с автопрокруткой вниз
     local function updateCanvas()
         task.wait(0.1)
         local totalHeight = 0
@@ -347,6 +355,8 @@ local function loadMenu()
             end
         end
         scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight + 20)
+        -- Автоматическая прокрутка в самый низ
+        scrollFrame.CanvasPosition = Vector2.new(0, math.max(0, totalHeight + 20 - 500))
     end
     updateCanvas()
 
@@ -394,6 +404,13 @@ local function loadMenu()
     end)
 
     animate(mainFrame, {BackgroundTransparency = 0.05}, 0.3)
+    
+    -- Уведомление
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "MANscript",
+        Text = "Хаб загружен! Листай вниз →",
+        Duration = 3
+    })
 end
 
 acceptBtn.MouseButton1Click:Connect(function()

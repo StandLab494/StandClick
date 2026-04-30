@@ -1,4 +1,4 @@
--- MANscript Hub с предупреждением
+-- MANscript Hub с предупреждением (включая RexBR Hub)
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
@@ -91,7 +91,7 @@ function loadMenu()
     gui.ResetOnSpawn = false
 
     local main = Instance.new("Frame")
-    main.Size = UDim2.new(0, 400, 0, 500)
+    main.Size = UDim2.new(0, 400, 0, 520)
     main.Position = UDim2.new(0, 10, 0, 60)
     main.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
     main.Parent = gui
@@ -229,6 +229,9 @@ function loadMenu()
     addScript("Forsaken", "https://raw.githubusercontent.com/zxcursedsocute/Forsaken-Script/refs/heads/main/lua", Color3.fromRGB(180, 120, 0))
     addScript("99 Nights", "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", Color3.fromRGB(120, 60, 180))
     addScript("Steal a Brainrot", "https://raw.githubusercontent.com/platinww/CrustyMain/refs/heads/main/Steal-A-Brainrot/DUELWorld.lua", Color3.fromRGB(150, 50, 100))
+    
+    addCat("=== БЫСТРЫЙ СБОР / ПОЛЁТ ===")
+    addScript("RexBR Hub (Fly+Collect)", "https://pastebin.com/raw/pCMCfnmV", Color3.fromRGB(0, 200, 150))
 
     addCat("=== ИНФО ===")
     local info = Instance.new("TextButton")

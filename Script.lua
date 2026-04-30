@@ -1,10 +1,10 @@
-
+-- MANscript Hub (с новыми скриптами: Evade, ETFB, Bee Swarm)
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-
+-- ===== ПЕРВОЕ МЕНЮ (оформление) =====
 local colors = {
     bg = Color3.fromRGB(18, 18, 22),
     card = Color3.fromRGB(28, 28, 35),
@@ -21,7 +21,7 @@ local function animate(obj, props, dur)
     return tween
 end
 
-
+-- ===== ЗАСТАВКА-ПРЕДУПРЕЖДЕНИЕ =====
 local splashGui = Instance.new("ScreenGui")
 splashGui.Name = "Warning"
 splashGui.Parent = game.CoreGui
@@ -94,7 +94,7 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 12)
 btnCorner.Parent = acceptBtn
 
-
+-- ===== ОСНОВНОЕ МЕНЮ (первое оформление) =====
 local function loadMenu()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "MANscriptHub"

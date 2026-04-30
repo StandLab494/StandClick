@@ -1,6 +1,31 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local Stats = game:GetService("Stats")
+
+-- ===== ПЕРЕМЕННЫЕ =====
+local currentTheme = "dark"
+local scriptRuns = {}
+
+-- Загрузка статистики из сохранения
+local function loadStats()
+    local success, data = pcall(function()
+        return readfile("MANscript_stats.json")
+    end
+    if success and data then
+        scriptRuns = HttpService:JSONDecode(data)
+    end
+end
+
+-- Сохранение статистики
+local function saveStats()
+    pcall(function()
+        writefile("MANscript_stats.json", HttpService:JSONEncode(scriptRuns))
+    end
+end
+
+loadStats()
 
 -- ===== ЗАСТАВКА =====
 local splashGui = Instance.new("ScreenGui")
@@ -74,15 +99,68 @@ acceptBtn.MouseButton1Click:Connect(function()
     blur:Destroy()
 end)
 
--- ===== МЕНЮ =====
+-- ===== АНИМИРОВАННЫЙ ФОН =====
+local bgGradient = Instance.new("Frame")
+bgGradient.Size = UDim2.new(1, 0, 1, 0)
+bgGradient.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+bgGradient.BackgroundTransparency = 0
+bgGradient.Parent = splashGui
+
+local particles = Instance.new("ParticleEmitter")
+particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+particles.Rate = 30
+particles.VelocityInheritance = 0
+particles.Lifetime = NumberRange.new(3)
+particles.SpreadAngle = Vector2.new(360, 360)
+particles.Speed = NumberRange.new(10, 30)
+particles.Transparency = NumberSequence.new(0.7)
+particles.Color = ColorSequence.new(Color3.fromRGB(150, 100, 255))
+particles.Parent = bgGradient
+
+local function animateBg()
+    while splashGui and splashGui.Parent do
+        local hue = tick() % 6 / 6
+        local color = Color3.fromHSV(hue, 0.6, 0.15)
+        TweenService:Create(bgGradient, TweenInfo.new(2), {BackgroundColor3 = color}):Play()
+        task.wait(3)
+    end
+end
+task.spawn(animateBg)
+
+-- ===== ОСНОВНОЕ МЕНЮ =====
 local gui = Instance.new("ScreenGui")
 gui.Name = "MANscriptHub"
 gui.Parent = game:GetService("CoreGui")
 gui.ResetOnSpawn = false
 
+-- Звук клика
+local clickSound = Instance.new("Sound")
+clickSound.SoundId = "rbxassetid://9120373326"
+clickSound.Volume = 0.5
+clickSound.Parent = gui
+
+local function playClick()
+    clickSound:Play()
+end
+
+-- Анимированный фон для меню
+local menuBg = Instance.new("Frame")
+menuBg.Size = UDim2.new(1, 0, 1, 0)
+menuBg.BackgroundColor3 = Color3.fromRGB(5, 5, 12)
+menuBg.Parent = gui
+
+task.spawn(function()
+    while gui and gui.Parent do
+        local hue = tick() % 6 / 6
+        local color = Color3.fromHSV(hue, 0.5, 0.1)
+        TweenService:Create(menuBg, TweenInfo.new(4), {BackgroundColor3 = color}):Play()
+        task.wait(4)
+    end
+end)
+
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 450, 0, 520)
-main.Position = UDim2.new(0, 10, 0, 70)
+main.Size = UDim2.new(0, 450, 0, 560)
+main.Position = UDim2.new(0, 10, 0, 60)
 main.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 main.BackgroundTransparency = 0.1
 main.BorderSizePixel = 0
@@ -103,7 +181,7 @@ titleCorner.CornerRadius = UDim.new(0, 14)
 titleCorner.Parent = titleBar
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -120, 1, 0)
+title.Size = UDim2.new(1, -180, 1, 0)
 title.Position = UDim2.new(0, 12, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "MANscript Hub"
@@ -113,14 +191,14 @@ title.TextXAlignment = Enum.TextXAlignment.Left
 title.Font = Enum.Font.GothamBold
 title.Parent = titleBar
 
--- КНОПКА ТЕЛЕГРАМ В ЗАГОЛОВКЕ
+-- Кнопка ТГК
 local tgBtn = Instance.new("TextButton")
-tgBtn.Size = UDim2.new(0, 80, 0, 30)
-tgBtn.Position = UDim2.new(1, -120, 0.5, -15)
+tgBtn.Size = UDim2.new(0, 70, 0, 30)
+tgBtn.Position = UDim2.new(1, -165, 0.5, -15)
 tgBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-tgBtn.Text = "📢 ТГК ВЛАДЕЛЬЦА СКРИПТА"
+tgBtn.Text = "📢 ТГК"
 tgBtn.TextColor3 = Color3.fromRGB(200, 180, 255)
-tgBtn.TextSize = 12
+tgBtn.TextSize = 11
 tgBtn.Font = Enum.Font.GothamBold
 tgBtn.BorderSizePixel = 0
 tgBtn.Parent = titleBar
@@ -130,12 +208,121 @@ tgCorner.CornerRadius = UDim.new(0, 8)
 tgCorner.Parent = tgBtn
 
 tgBtn.MouseButton1Click:Connect(function()
+    playClick()
     setclipboard("https://t.me/manscripthub")
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "MANscript",
         Text = "Ссылка на ТГК скопирована!",
         Duration = 2
     })
+end)
+
+-- Кнопка смены темы
+local themeBtn = Instance.new("TextButton")
+themeBtn.Size = UDim2.new(0, 50, 0, 30)
+themeBtn.Position = UDim2.new(1, -110, 0.5, -15)
+themeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+themeBtn.Text = "🌙"
+themeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+themeBtn.TextSize = 16
+themeBtn.Font = Enum.Font.GothamBold
+themeBtn.BorderSizePixel = 0
+themeBtn.Parent = titleBar
+
+local themeCorner = Instance.new("UICorner")
+themeCorner.CornerRadius = UDim.new(0, 8)
+themeCorner.Parent = themeBtn
+
+themeBtn.MouseButton1Click:Connect(function()
+    playClick()
+    if currentTheme == "dark" then
+        currentTheme = "light"
+        main.BackgroundColor3 = Color3.fromRGB(240, 240, 250)
+        main.BackgroundTransparency = 0.05
+        titleBar.BackgroundColor3 = Color3.fromRGB(220, 220, 235)
+        title.TextColor3 = Color3.fromRGB(20, 20, 30)
+        themeBtn.Text = "☀️"
+    else
+        currentTheme = "dark"
+        main.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+        main.BackgroundTransparency = 0.1
+        titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+        title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        themeBtn.Text = "🌙"
+    end
+end)
+
+-- Кнопка статистики
+local statsBtn = Instance.new("TextButton")
+statsBtn.Size = UDim2.new(0, 50, 0, 30)
+statsBtn.Position = UDim2.new(1, -55, 0.5, -15)
+statsBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+statsBtn.Text = "📊"
+statsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+statsBtn.TextSize = 16
+statsBtn.Font = Enum.Font.GothamBold
+statsBtn.BorderSizePixel = 0
+statsBtn.Parent = titleBar
+
+local statsCorner = Instance.new("UICorner")
+statsCorner.CornerRadius = UDim.new(0, 8)
+statsCorner.Parent = statsBtn
+
+local statsFrame = nil
+statsBtn.MouseButton1Click:Connect(function()
+    playClick()
+    if statsFrame and statsFrame.Parent then
+        statsFrame:Destroy()
+        statsFrame = nil
+        return
+    end
+    
+    statsFrame = Instance.new("Frame")
+    statsFrame.Size = UDim2.new(0, 200, 0, 150)
+    statsFrame.Position = UDim2.new(1, -210, 0, 50)
+    statsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    statsFrame.BackgroundTransparency = 0.1
+    statsFrame.BorderSizePixel = 0
+    statsFrame.Parent = main
+    
+    local statsCorner = Instance.new("UICorner")
+    statsCorner.CornerRadius = UDim.new(0, 10)
+    statsCorner.Parent = statsFrame
+    
+    local statsTitle = Instance.new("TextLabel")
+    statsTitle.Size = UDim2.new(1, 0, 0, 30)
+    statsTitle.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    statsTitle.Text = "📊 Статистика"
+    statsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    statsTitle.TextSize = 12
+    statsTitle.Font = Enum.Font.GothamBold
+    statsTitle.Parent = statsFrame
+    
+    local statsText = Instance.new("TextLabel")
+    statsText.Size = UDim2.new(1, -10, 0, 100)
+    statsText.Position = UDim2.new(0, 5, 0, 35)
+    statsText.BackgroundTransparency = 1
+    statsText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    statsText.TextSize = 11
+    statsText.TextWrapped = true
+    statsText.TextXAlignment = Enum.TextXAlignment.Left
+    statsText.Font = Enum.Font.Gotham
+    statsText.Parent = statsFrame
+    
+    local statsStr = "Запуски скриптов:\n"
+    local total = 0
+    for name, count in pairs(scriptRuns) do
+        statsStr = statsStr .. name .. ": " .. count .. "\n"
+        total = total + count
+    end
+    if total == 0 then
+        statsStr = statsStr .. "пока нет запусков"
+    end
+    statsStr = statsStr .. "\n\nВсего запусков: " .. total
+    statsText.Text = statsStr
+    
+    task.wait(5)
+    if statsFrame then statsFrame:Destroy() end
 end)
 
 local minBtn = Instance.new("TextButton")
@@ -241,6 +428,10 @@ local function addScript(name, url, col)
     runCorner.Parent = run
     
     run.MouseButton1Click:Connect(function()
+        playClick()
+        scriptRuns[name] = (scriptRuns[name] or 0) + 1
+        saveStats()
+        
         pcall(function()
             loadstring(game:HttpGet(url))()
         end)
@@ -280,6 +471,7 @@ local infoCorner = Instance.new("UICorner")
 infoCorner.CornerRadius = UDim.new(0, 10)
 infoCorner.Parent = info
 
+-- ===== ПЕРЕТАСКИВАНИЕ =====
 local dragging = false
 local dragStart = nil
 local frameStart = nil
@@ -303,11 +495,13 @@ UserInputService.InputEnded:Connect(function()
     dragging = false
 end)
 
+-- ===== СВОРАЧИВАНИЕ =====
 local minimized = false
 local fullSize = main.Size
 local fullPos = main.Position
 
 minBtn.MouseButton1Click:Connect(function()
+    playClick()
     if minimized then
         minimized = false
         main.Size = fullSize
@@ -322,6 +516,23 @@ minBtn.MouseButton1Click:Connect(function()
         scroll.Visible = false
     end
 end)
+
+-- ===== АВТО-ОБНОВЛЕНИЕ =====
+local currentVersion = "2.0"
+local function checkUpdate()
+    local success, remoteVersion = pcall(function()
+        return game:HttpGet("https://raw.githubusercontent.com/StandLab494/StandClick/refs/heads/main/version.txt")
+    end)
+    
+    if success and remoteVersion and remoteVersion ~= currentVersion then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "MANscript",
+            Text = "Доступна новая версия! Перезапусти хаб для обновления.",
+            Duration = 5
+        })
+    end
+end
+task.spawn(checkUpdate)
 
 task.wait(0.1)
 local h = 0

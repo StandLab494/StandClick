@@ -1,6 +1,5 @@
--- MANscript Hub с предупреждением (включая RexBR Hub)
+-- MANscript Hub с предупреждением (ИСПРАВЛЕННЫЙ)
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 
 -- ===== ЗАСТАВКА-ПРЕДУПРЕЖДЕНИЕ =====
 local splashGui = Instance.new("ScreenGui")
@@ -75,16 +74,8 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 12)
 btnCorner.Parent = acceptBtn
 
-acceptBtn.MouseButton1Click:Connect(function()
-    splashGui:Destroy()
-    blur:Destroy()
-    loadMenu()
-end)
-
-task.wait(4)
-pcall(function() splashGui:Destroy() blur:Destroy() loadMenu() end)
-
-function loadMenu()
+-- Функция загрузки меню
+local function loadMenu()
     local gui = Instance.new("ScreenGui")
     gui.Name = "MANhub"
     gui.Parent = game.CoreGui
@@ -304,7 +295,21 @@ function loadMenu()
 
     game.StarterGui:SetCore("SendNotification", {
         Title = "MANscript",
-        Text = "Хаб загружен! Нажми на предупреждение",
-        Duration = 3
+        Text = "Хаб загружен!",
+        Duration = 2
     })
 end
+
+-- ЗАПУСК: при нажатии на кнопку или через 4 секунды
+acceptBtn.MouseButton1Click:Connect(function()
+    splashGui:Destroy()
+    blur:Destroy()
+    loadMenu()
+end)
+
+task.wait(4)
+pcall(function()
+    splashGui:Destroy()
+    blur:Destroy()
+    loadMenu()
+end)

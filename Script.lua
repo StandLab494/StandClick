@@ -1,31 +1,6 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local HttpService = game:GetService("HttpService")
-local Stats = game:GetService("Stats")
-
--- ===== ПЕРЕМЕННЫЕ =====
-local currentTheme = "dark"
-local scriptRuns = {}
-
--- Загрузка статистики из сохранения
-local function loadStats()
-    local success, data = pcall(function()
-        return readfile("MANscript_stats.json")
-    end
-    if success and data then
-        scriptRuns = HttpService:JSONDecode(data)
-    end
-end
-
--- Сохранение статистики
-local function saveStats()
-    pcall(function()
-        writefile("MANscript_stats.json", HttpService:JSONEncode(scriptRuns))
-    end
-end
-
-loadStats()
 
 -- ===== ЗАСТАВКА =====
 local splashGui = Instance.new("ScreenGui")
@@ -99,29 +74,18 @@ acceptBtn.MouseButton1Click:Connect(function()
     blur:Destroy()
 end)
 
--- ===== АНИМИРОВАННЫЙ ФОН =====
+-- ===== АНИМИРОВАННЫЙ ФОН (ЗАСТАВКА) =====
 local bgGradient = Instance.new("Frame")
 bgGradient.Size = UDim2.new(1, 0, 1, 0)
 bgGradient.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 bgGradient.BackgroundTransparency = 0
 bgGradient.Parent = splashGui
 
-local particles = Instance.new("ParticleEmitter")
-particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-particles.Rate = 30
-particles.VelocityInheritance = 0
-particles.Lifetime = NumberRange.new(3)
-particles.SpreadAngle = Vector2.new(360, 360)
-particles.Speed = NumberRange.new(10, 30)
-particles.Transparency = NumberSequence.new(0.7)
-particles.Color = ColorSequence.new(Color3.fromRGB(150, 100, 255))
-particles.Parent = bgGradient
-
 local function animateBg()
     while splashGui and splashGui.Parent do
         local hue = tick() % 6 / 6
         local color = Color3.fromHSV(hue, 0.6, 0.15)
-        TweenService:Create(bgGradient, TweenInfo.new(2), {BackgroundColor3 = color}):Play()
+        TweenService:Create(bgGradient, TweenInfo.new(3), {BackgroundColor3 = color}):Play()
         task.wait(3)
     end
 end
@@ -143,7 +107,7 @@ local function playClick()
     clickSound:Play()
 end
 
--- Анимированный фон для меню
+-- Анимированный фон меню
 local menuBg = Instance.new("Frame")
 menuBg.Size = UDim2.new(1, 0, 1, 0)
 menuBg.BackgroundColor3 = Color3.fromRGB(5, 5, 12)
@@ -233,6 +197,7 @@ local themeCorner = Instance.new("UICorner")
 themeCorner.CornerRadius = UDim.new(0, 8)
 themeCorner.Parent = themeBtn
 
+local currentTheme = "dark"
 themeBtn.MouseButton1Click:Connect(function()
     playClick()
     if currentTheme == "dark" then
@@ -250,79 +215,6 @@ themeBtn.MouseButton1Click:Connect(function()
         title.TextColor3 = Color3.fromRGB(255, 255, 255)
         themeBtn.Text = "🌙"
     end
-end)
-
--- Кнопка статистики
-local statsBtn = Instance.new("TextButton")
-statsBtn.Size = UDim2.new(0, 50, 0, 30)
-statsBtn.Position = UDim2.new(1, -55, 0.5, -15)
-statsBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-statsBtn.Text = "📊"
-statsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-statsBtn.TextSize = 16
-statsBtn.Font = Enum.Font.GothamBold
-statsBtn.BorderSizePixel = 0
-statsBtn.Parent = titleBar
-
-local statsCorner = Instance.new("UICorner")
-statsCorner.CornerRadius = UDim.new(0, 8)
-statsCorner.Parent = statsBtn
-
-local statsFrame = nil
-statsBtn.MouseButton1Click:Connect(function()
-    playClick()
-    if statsFrame and statsFrame.Parent then
-        statsFrame:Destroy()
-        statsFrame = nil
-        return
-    end
-    
-    statsFrame = Instance.new("Frame")
-    statsFrame.Size = UDim2.new(0, 200, 0, 150)
-    statsFrame.Position = UDim2.new(1, -210, 0, 50)
-    statsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    statsFrame.BackgroundTransparency = 0.1
-    statsFrame.BorderSizePixel = 0
-    statsFrame.Parent = main
-    
-    local statsCorner = Instance.new("UICorner")
-    statsCorner.CornerRadius = UDim.new(0, 10)
-    statsCorner.Parent = statsFrame
-    
-    local statsTitle = Instance.new("TextLabel")
-    statsTitle.Size = UDim2.new(1, 0, 0, 30)
-    statsTitle.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-    statsTitle.Text = "📊 Статистика"
-    statsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    statsTitle.TextSize = 12
-    statsTitle.Font = Enum.Font.GothamBold
-    statsTitle.Parent = statsFrame
-    
-    local statsText = Instance.new("TextLabel")
-    statsText.Size = UDim2.new(1, -10, 0, 100)
-    statsText.Position = UDim2.new(0, 5, 0, 35)
-    statsText.BackgroundTransparency = 1
-    statsText.TextColor3 = Color3.fromRGB(200, 200, 200)
-    statsText.TextSize = 11
-    statsText.TextWrapped = true
-    statsText.TextXAlignment = Enum.TextXAlignment.Left
-    statsText.Font = Enum.Font.Gotham
-    statsText.Parent = statsFrame
-    
-    local statsStr = "Запуски скриптов:\n"
-    local total = 0
-    for name, count in pairs(scriptRuns) do
-        statsStr = statsStr .. name .. ": " .. count .. "\n"
-        total = total + count
-    end
-    if total == 0 then
-        statsStr = statsStr .. "пока нет запусков"
-    end
-    statsStr = statsStr .. "\n\nВсего запусков: " .. total
-    statsText.Text = statsStr
-    
-    task.wait(5)
-    if statsFrame then statsFrame:Destroy() end
 end)
 
 local minBtn = Instance.new("TextButton")
@@ -429,9 +321,6 @@ local function addScript(name, url, col)
     
     run.MouseButton1Click:Connect(function()
         playClick()
-        scriptRuns[name] = (scriptRuns[name] or 0) + 1
-        saveStats()
-        
         pcall(function()
             loadstring(game:HttpGet(url))()
         end)
@@ -516,23 +405,6 @@ minBtn.MouseButton1Click:Connect(function()
         scroll.Visible = false
     end
 end)
-
--- ===== АВТО-ОБНОВЛЕНИЕ =====
-local currentVersion = "0.5"
-local function checkUpdate()
-    local success, remoteVersion = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/StandLab494/StandClick/refs/heads/main/version.txt")
-    end)
-    
-    if success and remoteVersion and remoteVersion ~= currentVersion then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "MANscript",
-            Text = "Доступна новая версия! Перезапусти хаб для обновления.",
-            Duration = 5
-        })
-    end
-end
-task.spawn(checkUpdate)
 
 task.wait(0.1)
 local h = 0

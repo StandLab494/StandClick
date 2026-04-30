@@ -1,10 +1,10 @@
--- MANscript Hub (первое меню + удобный скролл)
+
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- ===== ПЕРВОЕ МЕНЮ (оформление) =====
+
 local colors = {
     bg = Color3.fromRGB(18, 18, 22),
     card = Color3.fromRGB(28, 28, 35),
@@ -21,7 +21,7 @@ local function animate(obj, props, dur)
     return tween
 end
 
--- ===== ЗАСТАВКА-ПРЕДУПРЕЖДЕНИЕ =====
+
 local splashGui = Instance.new("ScreenGui")
 splashGui.Name = "Warning"
 splashGui.Parent = game.CoreGui
@@ -94,7 +94,7 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 12)
 btnCorner.Parent = acceptBtn
 
--- ===== ОСНОВНОЕ МЕНЮ (первое оформление + удобный скролл) =====
+
 local function loadMenu()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "MANscriptHub"
@@ -189,7 +189,7 @@ local function loadMenu()
     scrollFrame.Position = UDim2.new(0, 10, 0, 65)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.BorderSizePixel = 0
-    scrollFrame.ScrollBarThickness = 5  -- толще для пальца
+    scrollFrame.ScrollBarThickness = 5
     scrollFrame.ScrollBarImageColor3 = colors.accent
     scrollFrame.ScrollBarImageTransparency = 0.5
     scrollFrame.ElasticBehavior = Enum.ElasticBehavior.Always
@@ -199,12 +199,6 @@ local function loadMenu()
     uiList.Padding = UDim.new(0, 12)
     uiList.SortOrder = Enum.SortOrder.LayoutOrder
     uiList.Parent = scrollFrame
-
-    -- Функция для автоматической прокрутки вниз
-    local function scrollToBottom()
-        task.wait(0.05)
-        scrollFrame.CanvasPosition = Vector2.new(0, scrollFrame.CanvasSize.Y.Offset)
-    end
 
     local function createCategory(title)
         local catFrame = Instance.new("Frame")
@@ -297,6 +291,9 @@ local function loadMenu()
         elseif name:find("99") then icon.Text = "🌙"
         elseif name:find("Steal") then icon.Text = "🧠"
         elseif name:find("RexBR") then icon.Text = "🚀"
+        elseif name:find("Evade") then icon.Text = "🏃"
+        elseif name:find("ETFB") then icon.Text = "🌊"
+        elseif name:find("Bee") then icon.Text = "🐝"
         else icon.Text = "📁" end
         
         runBtn.MouseButton1Click:Connect(function()
@@ -319,15 +316,18 @@ local function loadMenu()
     createScriptButton("Dead Rails", "https://raw.githubusercontent.com/hungquan99/HungHub/main/loader.lua", Color3.fromRGB(100, 100, 200))
     createScriptButton("TSB", "https://raw.githubusercontent.com/COOLXPLO/DP-HUB-coolxplo/refs/heads/main/TSB.lua", Color3.fromRGB(200, 150, 50))
     createScriptButton("Rivals", "https://soluna-script.vercel.app/main.lua", Color3.fromRGB(100, 150, 200))
+    createScriptButton("Evade", "https://raw.githubusercontent.com/thesigmacorex/Flashware/main/script", Color3.fromRGB(255, 100, 0))
 
     createCategory("🎮 РПГ")
     createScriptButton("Blox Fruit", "https://raw.githubusercontent.com/flazhy/QuantumOnyx/refs/heads/main/QuantumOnyx.lua", Color3.fromRGB(0, 150, 100))
     createScriptButton("Forsaken", "https://raw.githubusercontent.com/zxcursedsocute/Forsaken-Script/refs/heads/main/lua", Color3.fromRGB(150, 100, 0))
     createScriptButton("99 Nights", "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", Color3.fromRGB(120, 60, 180))
     createScriptButton("Steal a Brainrot", "https://raw.githubusercontent.com/platinww/CrustyMain/refs/heads/main/Steal-A-Brainrot/DUELWorld.lua", Color3.fromRGB(150, 50, 100))
+    createScriptButton("Bee Swarm Simulator", "https://raw.githubusercontent.com/DevKron/Kron_Hub/refs/heads/main/version_1.0", Color3.fromRGB(255, 200, 0))
 
     createCategory("🚀 БЫСТРЫЙ СБОР / ПОЛЁТ")
     createScriptButton("RexBR Hub (Fly+Collect)", "https://pastebin.com/raw/pCMCfnmV", Color3.fromRGB(0, 200, 150))
+    createScriptButton("ETFB (Tsunami Brainrot)", "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots", Color3.fromRGB(0, 150, 200))
 
     createCategory("ℹ️ ИНФО")
     local infoBtn = Instance.new("TextButton")
@@ -345,7 +345,6 @@ local function loadMenu()
     infoCorner.CornerRadius = UDim.new(0, 12)
     infoCorner.Parent = infoBtn
 
-    -- Обновление Canvas с автопрокруткой вниз
     local function updateCanvas()
         task.wait(0.1)
         local totalHeight = 0
@@ -355,7 +354,6 @@ local function loadMenu()
             end
         end
         scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight + 20)
-        -- Автоматическая прокрутка в самый низ
         scrollFrame.CanvasPosition = Vector2.new(0, math.max(0, totalHeight + 20 - 500))
     end
     updateCanvas()
@@ -405,7 +403,6 @@ local function loadMenu()
 
     animate(mainFrame, {BackgroundTransparency = 0.05}, 0.3)
     
-    -- Уведомление
     game.StarterGui:SetCore("SendNotification", {
         Title = "MANscript",
         Text = "Хаб загружен! Листай вниз →",

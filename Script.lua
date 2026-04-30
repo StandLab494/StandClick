@@ -518,7 +518,7 @@ minBtn.MouseButton1Click:Connect(function()
 end)
 
 -- ===== АВТО-ОБНОВЛЕНИЕ =====
-local currentVersion = "2.0"
+local currentVersion = "0.5"
 local function checkUpdate()
     local success, remoteVersion = pcall(function()
         return game:HttpGet("https://raw.githubusercontent.com/StandLab494/StandClick/refs/heads/main/version.txt")

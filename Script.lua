@@ -1,4 +1,4 @@
--- MANscript Hub | FPS Boost + счётчик + темы
+-- MANscript Hub | Радио (заглушка)
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -8,6 +8,15 @@ local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 local Stats = game:GetService("Stats")
+
+-- ===== ЗАГЛУШКА ДЛЯ МУЗЫКИ =====
+local function musicNotAvailable()
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "🎵 MANscript Radio",
+        Text = "❌ Недоступно на данный момент\n(Функция в разработке)",
+        Duration = 3
+    })
+end
 
 -- ===== ПЕРЕМЕННЫЕ =====
 local currentLanguage = "RU"
@@ -21,7 +30,6 @@ local totalRuns = 0
 local function setFPSBoost(enabled)
     fpsBoostEnabled = enabled
     if enabled then
-        -- Визуальные эффекты
         Lighting.FogEnd = 0
         Lighting.FogStart = 999999
         Lighting.GlobalShadows = false
@@ -34,7 +42,6 @@ local function setFPSBoost(enabled)
             end
         end
         
-        -- Чистим частицы и декали
         task.spawn(function()
             while fpsBoostEnabled and RunService:IsRunning() do
                 for _, obj in pairs(workspace:GetDescendants()) do
@@ -94,24 +101,24 @@ local themes = {
 -- ===== ЯЗЫКИ =====
 local lang = {
     RU = {
-        menu = "📊 Меню", scripts = "🎮 Скрипты", settings = "⚙️ Настройки", theme = "🎨 Цвет темы",
+        menu = "📊 Меню", scripts = "🎮 Скрипты", settings = "⚙️ Настройки", radio = "🎵 Радио",
         nickname = "Ваш ник", userid = "ID пользователя", accountAge = "Аккаунт создан", days = "дней",
         totalPlayers = "Всего игроков", ping = "Пинг", totalRuns = "Запусков скриптов", fps = "FPS",
         fpsBoost = "🔋 FPS Boost Mode", resetStats = "Сбросить статистику", language = "Язык",
-        animations = "Анимации", sounds = "Звуки кликов", themeSelect = "Выберите тему",
-        start = "СТАРТ", clickToStart = "нажми чтобы запустить →", statResetDone = "Статистика сброшена",
-        needRestart = "Перезапустите хаб", catShooters = "⚔️ ШУТЕРЫ И PVP", catRPG = "🎮 РПГ И ФАРМ",
-        catFast = "🚀 ПОЛЁТ И БЫСТРЫЙ СБОР", back = "Назад"
+        animations = "Анимации", sounds = "Звуки кликов", start = "СТАРТ", clickToStart = "нажми чтобы запустить →",
+        statResetDone = "Статистика сброшена", needRestart = "Перезапустите хаб",
+        catShooters = "⚔️ ШУТЕРЫ И PVP", catRPG = "🎮 РПГ И ФАРМ", catFast = "🚀 ПОЛЁТ И БЫСТРЫЙ СБОР",
+        comingSoon = "❌ Недоступно на данный момент\n(Функция в разработке)"
     },
     EN = {
-        menu = "📊 Menu", scripts = "🎮 Scripts", settings = "⚙️ Settings", theme = "🎨 Color Theme",
+        menu = "📊 Menu", scripts = "🎮 Scripts", settings = "⚙️ Settings", radio = "🎵 Radio",
         nickname = "Your nickname", userid = "User ID", accountAge = "Account created", days = "days",
         totalPlayers = "Total players", ping = "Ping", totalRuns = "Script runs", fps = "FPS",
         fpsBoost = "🔋 FPS Boost Mode", resetStats = "Reset stats", language = "Language",
-        animations = "Animations", sounds = "Click sounds", themeSelect = "Select theme",
-        start = "START", clickToStart = "click to start →", statResetDone = "Stats reset",
-        needRestart = "Restart the hub", catShooters = "⚔️ SHOOTERS & PVP", catRPG = "🎮 RPG & FARM",
-        catFast = "🚀 FLY & FAST COLLECT", back = "Back"
+        animations = "Animations", sounds = "Click sounds", start = "START", clickToStart = "click to start →",
+        statResetDone = "Stats reset", needRestart = "Restart the hub",
+        catShooters = "⚔️ SHOOTERS & PVP", catRPG = "🎮 RPG & FARM", catFast = "🚀 FLY & FAST COLLECT",
+        comingSoon = "❌ Not available at the moment\n(Feature in development)"
     }
 }
 
@@ -225,7 +232,6 @@ local function loadMenu()
     avatarIcon.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
     avatarIcon.Image = "rbxasset://textures/ui/Shell/Button.png"
     avatarIcon.Parent = titleBar
-
     local avatarCorner = Instance.new("UICorner")
     avatarCorner.CornerRadius = UDim.new(0, 10)
     avatarCorner.Parent = avatarIcon
@@ -241,7 +247,6 @@ local function loadMenu()
     titleText.Font = Enum.Font.GothamBold
     titleText.Parent = titleBar
 
-    -- Кнопка ТГК
     local tgBtn = Instance.new("TextButton")
     tgBtn.Size = UDim2.new(0, 70, 0, 32)
     tgBtn.Position = UDim2.new(1, -130, 0.5, -16)
@@ -279,37 +284,48 @@ local function loadMenu()
     tabsFrame.Parent = mainFrame
 
     local tab1 = Instance.new("TextButton")
-    tab1.Size = UDim2.new(0.33, 0, 1, 0)
+    tab1.Size = UDim2.new(0.25, 0, 1, 0)
     tab1.Position = UDim2.new(0, 0, 0, 0)
     tab1.BackgroundColor3 = themes[currentTheme].main
     tab1.Text = getText("menu")
     tab1.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tab1.TextSize = 12
+    tab1.TextSize = 11
     tab1.Font = Enum.Font.GothamBold
     tab1.BorderSizePixel = 0
     tab1.Parent = tabsFrame
 
     local tab2 = Instance.new("TextButton")
-    tab2.Size = UDim2.new(0.34, 0, 1, 0)
-    tab2.Position = UDim2.new(0.33, 0, 0, 0)
+    tab2.Size = UDim2.new(0.25, 0, 1, 0)
+    tab2.Position = UDim2.new(0.25, 0, 0, 0)
     tab2.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
     tab2.Text = getText("scripts")
     tab2.TextColor3 = Color3.fromRGB(240, 240, 240)
-    tab2.TextSize = 12
+    tab2.TextSize = 11
     tab2.Font = Enum.Font.GothamBold
     tab2.BorderSizePixel = 0
     tab2.Parent = tabsFrame
 
     local tab3 = Instance.new("TextButton")
-    tab3.Size = UDim2.new(0.33, 0, 1, 0)
-    tab3.Position = UDim2.new(0.67, 0, 0, 0)
+    tab3.Size = UDim2.new(0.25, 0, 1, 0)
+    tab3.Position = UDim2.new(0.5, 0, 0, 0)
     tab3.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
     tab3.Text = getText("settings")
     tab3.TextColor3 = Color3.fromRGB(240, 240, 240)
-    tab3.TextSize = 12
+    tab3.TextSize = 11
     tab3.Font = Enum.Font.GothamBold
     tab3.BorderSizePixel = 0
     tab3.Parent = tabsFrame
+
+    local tab4 = Instance.new("TextButton")
+    tab4.Size = UDim2.new(0.25, 0, 1, 0)
+    tab4.Position = UDim2.new(0.75, 0, 0, 0)
+    tab4.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    tab4.Text = getText("radio")
+    tab4.TextColor3 = Color3.fromRGB(240, 240, 240)
+    tab4.TextSize = 11
+    tab4.Font = Enum.Font.GothamBold
+    tab4.BorderSizePixel = 0
+    tab4.Parent = tabsFrame
 
     local contentFrame = Instance.new("Frame")
     contentFrame.Size = UDim2.new(1, -20, 1, -115)
@@ -335,11 +351,9 @@ local function loadMenu()
         card.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
         card.BackgroundTransparency = 0.3
         card.Parent = menuScroll
-        
         local cardCorner = Instance.new("UICorner")
         cardCorner.CornerRadius = UDim.new(0, 12)
         cardCorner.Parent = card
-        
         local iconLabel = Instance.new("TextLabel")
         iconLabel.Size = UDim2.new(0, 45, 1, 0)
         iconLabel.BackgroundTransparency = 1
@@ -348,7 +362,6 @@ local function loadMenu()
         iconLabel.TextSize = 28
         iconLabel.Font = Enum.Font.Gotham
         iconLabel.Parent = card
-        
         local titleLabel = Instance.new("TextLabel")
         titleLabel.Size = UDim2.new(1, -60, 0, 25)
         titleLabel.Position = UDim2.new(0, 55, 0, 8)
@@ -359,7 +372,6 @@ local function loadMenu()
         titleLabel.TextXAlignment = Enum.TextXAlignment.Left
         titleLabel.Font = Enum.Font.Gotham
         titleLabel.Parent = card
-        
         local valueLabel = Instance.new("TextLabel")
         valueLabel.Size = UDim2.new(1, -60, 0, 25)
         valueLabel.Position = UDim2.new(0, 55, 0, 30)
@@ -469,7 +481,7 @@ local function loadMenu()
         nameLabel.BackgroundTransparency = 1
         nameLabel.Text = name
         nameLabel.TextColor3 = Color3.fromRGB(235, 235, 245)
-        nameLabel.TextSize = 14
+        nameLabel.TextSize = 13
         nameLabel.TextXAlignment = Enum.TextXAlignment.Left
         nameLabel.Font = Enum.Font.GothamBold
         nameLabel.Parent = btn
@@ -572,13 +584,17 @@ local function loadMenu()
         end)
     end
 
+    local function applyAnimations(enabled) animationsEnabled = enabled end
+    local function applySounds(enabled) soundEnabled = enabled end
+
     addSettingsToggle(getText("fpsBoost"), "fpsBoost", fpsBoostEnabled, function(state)
         fpsBoostEnabled = state
         setFPSBoost(state)
         saveStats()
+        game.StarterGui:SetCore("SendNotification", { Title = "MANscript", Text = state and "FPS Boost ВКЛЮЧЁН ✅" or "FPS Boost ВЫКЛЮЧЕН ❌", Duration = 2 })
     end)
-    addSettingsToggle(getText("animations"), "animations", animationsEnabled, function(state) animationsEnabled = state end)
-    addSettingsToggle(getText("sounds"), "sounds", soundEnabled, function(state) soundEnabled = state end)
+    addSettingsToggle(getText("animations"), "animations", animationsEnabled, applyAnimations)
+    addSettingsToggle(getText("sounds"), "sounds", soundEnabled, applySounds)
 
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(1, -10, 0, 55)
@@ -617,11 +633,156 @@ local function loadMenu()
         game.StarterGui:SetCore("SendNotification", { Title = "MANscript", Text = getText("needRestart"), Duration = 2 })
     end)
 
+    -- Вкладка Радио (ЗАГЛУШКА)
+    local radioScroll = Instance.new("ScrollingFrame")
+    radioScroll.Size = UDim2.new(1, 0, 1, 0)
+    radioScroll.BackgroundTransparency = 1
+    radioScroll.ScrollBarThickness = 5
+    radioScroll.Visible = false
+    radioScroll.Parent = contentFrame
+    local radioLayout = Instance.new("UIListLayout")
+    radioLayout.Padding = UDim.new(0, 10)
+    radioLayout.Parent = radioScroll
+
+    -- Сообщение о разработке
+    local devMessage = Instance.new("TextLabel")
+    devMessage.Size = UDim2.new(1, -10, 0, 80)
+    devMessage.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+    devMessage.BackgroundTransparency = 0.3
+    devMessage.Text = "🎵 РАДИО\n\n❌ Недоступно на данный момент\n(Функция в разработке)"
+    devMessage.TextColor3 = Color3.fromRGB(200, 200, 200)
+    devMessage.TextSize = 12
+    devMessage.TextWrapped = true
+    devMessage.Font = Enum.Font.Gotham
+    devMessage.Parent = radioScroll
+    local devCorner = Instance.new("UICorner")
+    devCorner.CornerRadius = UDim.new(0, 12)
+    devCorner.Parent = devMessage
+
+    -- Заглушка на все кнопки радио
+    local function radioNotAvailable()
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "🎵 MANscript Radio",
+            Text = "❌ Недоступно на данный момент\n(Функция в разработке)",
+            Duration = 3
+        })
+    end
+
+    -- Кнопки-заглушки
+    local stopPlaceholder = Instance.new("TextButton")
+    stopPlaceholder.Size = UDim2.new(1, -10, 0, 50)
+    stopPlaceholder.Position = UDim2.new(0, 5, 0, 95)
+    stopPlaceholder.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+    stopPlaceholder.BackgroundTransparency = 0.3
+    stopPlaceholder.Text = "⏹ СТОП (скоро)"
+    stopPlaceholder.TextColor3 = Color3.fromRGB(200, 200, 200)
+    stopPlaceholder.TextSize = 14
+    stopPlaceholder.Font = Enum.Font.GothamBold
+    stopPlaceholder.Parent = radioScroll
+    local stopCorner = Instance.new("UICorner")
+    stopCorner.CornerRadius = UDim.new(0, 12)
+    stopCorner.Parent = stopPlaceholder
+    stopPlaceholder.MouseButton1Click:Connect(radioNotAvailable)
+
+    local volDownPlaceholder = Instance.new("TextButton")
+    volDownPlaceholder.Size = UDim2.new(0.45, -5, 0, 50)
+    volDownPlaceholder.Position = UDim2.new(0, 5, 0, 155)
+    volDownPlaceholder.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+    volDownPlaceholder.BackgroundTransparency = 0.3
+    volDownPlaceholder.Text = "🔉 Громкость -"
+    volDownPlaceholder.TextColor3 = Color3.fromRGB(200, 200, 200)
+    volDownPlaceholder.TextSize = 14
+    volDownPlaceholder.Font = Enum.Font.GothamBold
+    volDownPlaceholder.Parent = radioScroll
+    local vdCorner = Instance.new("UICorner")
+    vdCorner.CornerRadius = UDim.new(0, 12)
+    vdCorner.Parent = volDownPlaceholder
+    volDownPlaceholder.MouseButton1Click:Connect(radioNotAvailable)
+
+    local volUpPlaceholder = Instance.new("TextButton")
+    volUpPlaceholder.Size = UDim2.new(0.45, -5, 0, 50)
+    volUpPlaceholder.Position = UDim2.new(0.55, 0, 0, 155)
+    volUpPlaceholder.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+    volUpPlaceholder.BackgroundTransparency = 0.3
+    volUpPlaceholder.Text = "🔊 Громкость +"
+    volUpPlaceholder.TextColor3 = Color3.fromRGB(200, 200, 200)
+    volUpPlaceholder.TextSize = 14
+    volUpPlaceholder.Font = Enum.Font.GothamBold
+    volUpPlaceholder.Parent = radioScroll
+    local vuCorner = Instance.new("UICorner")
+    vuCorner.CornerRadius = UDim.new(0, 12)
+    vuCorner.Parent = volUpPlaceholder
+    volUpPlaceholder.MouseButton1Click:Connect(radioNotAvailable)
+
+    -- Список треков (заглушки)
+    local tracks = {"🎵 Трек 1", "🎵 Трек 2", "🎵 Трек 3", "🎵 Трек 4", "🎵 Трек 5"}
+    local yOffset = 215
+    for _, track in ipairs(tracks) do
+        local trackBtn = Instance.new("TextButton")
+        trackBtn.Size = UDim2.new(1, -10, 0, 45)
+        trackBtn.Position = UDim2.new(0, 5, 0, yOffset)
+        trackBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+        trackBtn.BackgroundTransparency = 0.3
+        trackBtn.Text = track
+        trackBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        trackBtn.TextSize = 12
+        trackBtn.TextXAlignment = Enum.TextXAlignment.Left
+        trackBtn.Font = Enum.Font.Gotham
+        trackBtn.Parent = radioScroll
+        local tCorner = Instance.new("UICorner")
+        tCorner.CornerRadius = UDim.new(0, 10)
+        tCorner.Parent = trackBtn
+        trackBtn.MouseButton1Click:Connect(radioNotAvailable)
+        yOffset = yOffset + 55
+    end
+
+    -- Поле ввода своего ID (заглушка)
+    local customFrame = Instance.new("Frame")
+    customFrame.Size = UDim2.new(1, -10, 0, 55)
+    customFrame.Position = UDim2.new(0, 5, 0, yOffset)
+    customFrame.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+    customFrame.BackgroundTransparency = 0.3
+    customFrame.Parent = radioScroll
+    local customCorner = Instance.new("UICorner")
+    customCorner.CornerRadius = UDim.new(0, 12)
+    customCorner.Parent = customFrame
+
+    local idInput = Instance.new("TextBox")
+    idInput.Size = UDim2.new(0.6, -10, 0, 40)
+    idInput.Position = UDim2.new(0, 10, 0.5, -20)
+    idInput.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+    idInput.Text = ""
+    idInput.PlaceholderText = "Введите ID трека (скоро)"
+    idInput.TextColor3 = Color3.fromRGB(200, 200, 200)
+    idInput.PlaceholderColor3 = Color3.fromRGB(80, 80, 100)
+    idInput.TextSize = 12
+    idInput.Font = Enum.Font.Gotham
+    idInput.BorderSizePixel = 0
+    idInput.Parent = customFrame
+    local inputCorner = Instance.new("UICorner")
+    inputCorner.CornerRadius = UDim.new(0, 8)
+    inputCorner.Parent = idInput
+    idInput.FocusLost:Connect(radioNotAvailable)
+
+    local customPlay = Instance.new("TextButton")
+    customPlay.Size = UDim2.new(0, 80, 0, 40)
+    customPlay.Position = UDim2.new(1, -90, 0.5, -20)
+    customPlay.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+    customPlay.Text = "Играть"
+    customPlay.TextColor3 = Color3.fromRGB(200, 200, 200)
+    customPlay.TextSize = 12
+    customPlay.Font = Enum.Font.GothamBold
+    customPlay.Parent = customFrame
+    local cpCorner = Instance.new("UICorner")
+    cpCorner.CornerRadius = UDim.new(0, 8)
+    cpCorner.Parent = customPlay
+    customPlay.MouseButton1Click:Connect(radioNotAvailable)
+
     local function updateScrollHeight(scroll)
         task.wait(0.1)
         local h = 10
         for _, child in pairs(scroll:GetChildren()) do
-            if child:IsA("Frame") or child:IsA("TextButton") then
+            if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("TextLabel") then
                 h = h + child.Size.Y.Offset + 10
             end
         end
@@ -633,33 +794,50 @@ local function loadMenu()
             menuScroll.Visible = true
             scriptsScroll.Visible = false
             settingsScroll.Visible = false
+            radioScroll.Visible = false
             tab1.BackgroundColor3 = themes[currentTheme].main
             tab2.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
             tab3.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            tab4.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
         elseif tab == 2 then
             menuScroll.Visible = false
             scriptsScroll.Visible = true
             settingsScroll.Visible = false
+            radioScroll.Visible = false
             tab1.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
             tab2.BackgroundColor3 = themes[currentTheme].main
             tab3.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            tab4.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
             updateScrollHeight(scriptsScroll)
         elseif tab == 3 then
             menuScroll.Visible = false
             scriptsScroll.Visible = false
             settingsScroll.Visible = true
+            radioScroll.Visible = false
             tab1.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
             tab2.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
             tab3.BackgroundColor3 = themes[currentTheme].main
+            tab4.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
             updateScrollHeight(settingsScroll)
+        elseif tab == 4 then
+            menuScroll.Visible = false
+            scriptsScroll.Visible = false
+            settingsScroll.Visible = false
+            radioScroll.Visible = true
+            tab1.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            tab2.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            tab3.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            tab4.BackgroundColor3 = themes[currentTheme].main
+            updateScrollHeight(radioScroll)
         end
     end
 
     tab1.MouseButton1Click:Connect(function() switchTab(1) end)
     tab2.MouseButton1Click:Connect(function() switchTab(2) end)
     tab3.MouseButton1Click:Connect(function() switchTab(3) end)
+    tab4.MouseButton1Click:Connect(function() switchTab(4) end)
 
-    -- Перетаскивание окна
+    -- Перетаскивание
     local dragging, dragStart, frameStart = false
     titleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch then
@@ -697,8 +875,9 @@ local function loadMenu()
     updateScrollHeight(menuScroll)
     updateScrollHeight(scriptsScroll)
     updateScrollHeight(settingsScroll)
+    updateScrollHeight(radioScroll)
     
-    game.StarterGui:SetCore("SendNotification", { Title = "MANscript", Text = "Хаб с FPS Boost загружен!", Duration = 3 })
+    game.StarterGui:SetCore("SendNotification", { Title = "MANscript", Text = "Хаб загружен! Радио в разработке", Duration = 3 })
 end
 
 acceptBtn.MouseButton1Click:Connect(function()
